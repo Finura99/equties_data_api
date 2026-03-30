@@ -1,6 +1,6 @@
 from pathlib import Path
 import pandas as pd
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from contextlib import asynccontextmanager
 from src.schemas import PriceResponse, TopMoverResponse
 
@@ -33,26 +33,36 @@ def get_prices(request: Request):
     df = request.app.state.prices_df
     return df.to_dict(orient="records")
 
+
+def get_prices_from_df(df, symbol):
+    symbol = symbol.upper()
+
+    result = df[df["symbol"] == symbol]
+
+    if result.empty:
+        return None
+    row = result.iloc[0]
+
+    return {
+        "symbol": row["symbol"],
+        "price": row["price"],
+        "prev_price": row["prev_price"]
+    }
+
 @app.get("/prices/{symbol}", response_model=PriceResponse) ##get all prices
 def get_price(symbol: str, request: Request):
-
-    symbol = symbol.upper() #converts it to uppercase
 
     ##df = pd.read_csv(PRICES_PATH) ## loads csv and converts to a dataframe-- UPDATE: SLOWER THAN CACHE
     df = request.app.state.prices_df ## uses in memory data rather than exhaust disk i/o operations.
 
-    filtered = df[df["symbol"] == symbol] #boolean check to see if it matches with our variable above
+    result = get_prices_from_df(df, symbol) #boolean check to see if it matches with our variable above
 
-    if filtered.empty:
-       return {
-           "symbol" : symbol,
-           "error" : "symbol not found"
-       }
+    if result is None:
+       raise HTTPException(status_code=404, detail="Symbol not found")
     
-    row = filtered.iloc[0] #returns first series (one row)
-    return row.to_dict() #API ready object
+    return result
     
-##fastapi will serialise the dict and respond it back as an array of JSON object/s.
+##fastapi will serialise the dict (result) and respond it back as an JSON array containing object/s.
 
 
 ## create an endpoint for top movers
@@ -71,7 +81,7 @@ def get_top_movers(request: Request, limit: int = 5):
     df = df[df["prev_price"] > 0]
 
 #calculate change_pct
-    df["change_pct"] = (df["price"] - df["prev_price"]) / (df["prev_price"] * 100)
+    df["change_pct"] = ((df["price"] - df["prev_price"]) / df["prev_price"] * 100)
 
 #sort descending
     top = df.sort_values("change_pct", ascending=False).head(limit) #take top n-> .head
