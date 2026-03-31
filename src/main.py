@@ -34,7 +34,7 @@ def get_prices(request: Request):
     return df.to_dict(orient="records")
 
 
-def get_prices_from_df(df, symbol):
+def get_price_from_df(df, symbol):
     symbol = symbol.upper()
 
     result = df[df["symbol"] == symbol]
@@ -55,7 +55,7 @@ def get_price(symbol: str, request: Request):
     ##df = pd.read_csv(PRICES_PATH) ## loads csv and converts to a dataframe-- UPDATE: SLOWER THAN CACHE
     df = request.app.state.prices_df ## uses in memory data rather than exhaust disk i/o operations.
 
-    result = get_prices_from_df(df, symbol) #boolean check to see if it matches with our variable above
+    result = get_price_from_df(df, symbol) #boolean check to see if it matches with our variable above
 
     if result is None:
        raise HTTPException(status_code=404, detail="Symbol not found")

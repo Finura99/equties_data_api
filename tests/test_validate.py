@@ -10,7 +10,7 @@ client = TestClient(app)
 BASE_DIR = Path(__file__).resolve().parent.parent ##root directory
 PRICES_PATH = BASE_DIR / "data" / "prices.csv"
 
-def test_get_prices_from_df_returns_aapl():
+def test_get_price_from_df_returns_aapl():
 
     df = pd.read_csv(PRICES_PATH) #load csv
 
@@ -35,7 +35,7 @@ def test_get_prices_from_df_returns_none():
 
     assert result is None
 
-def test_get_prices_from_df_returns_data():
+def test_get_price_from_df_returns_data():
 
     df = pd.DataFrame({
         "symbol" : ["AAPL", "MSFT"],
@@ -61,7 +61,7 @@ app.state.prices_df = pd.DataFrame({
 
 
 ##test valid symbol
-def test_get_prices_success():
+def test_get_price_success():
     
     response = client.get("/prices/AAPL")
 
@@ -72,7 +72,7 @@ def test_get_prices_success():
     assert "price" in data
 
 ##test invalid symbol
-def test_get_prices_not_found():
+def test_get_price_not_found():
 
     response = client.get("/prices/INVALID")
 
