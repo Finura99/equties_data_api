@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from pathlib import Path
 import sqlite3
 
-###logic layer 
+###logic layer / validation and database 
 
 
 def validate_symbol(symbol: str) -> str:
@@ -13,7 +13,7 @@ def validate_symbol(symbol: str) -> str:
     
     return symbol
 
-# Get absolute path to DB
+# Get path to DB
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "prices.db"
 
@@ -41,8 +41,8 @@ def get_price_from_db(symbol: str):
 
 
 # Quick test runs
-print(get_price_from_db("AAPL"))
-print(get_price_from_db("MSFT"))
-print(get_price_from_db("GOOGL"))
+#print(get_price_from_db("AAPL"))
+#print(get_price_from_db("MSFT"))
+#print(get_price_from_db("GOOGL"))
 
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from src.main import get_prices_from_df
+from src.main import get_price_from_df
 from pathlib import Path
 from fastapi.testclient import TestClient
 from src.main import app
@@ -14,7 +14,7 @@ def test_get_price_from_df_returns_aapl():
 
     df = pd.read_csv(PRICES_PATH) #load csv
 
-    result = get_prices_from_df(df, "AAPL") #test function here
+    result = get_price_from_df(df, "AAPL") #test function here
 
     assert result is not None #expect result not to be none
     assert result["symbol"] == "AAPL"
@@ -23,7 +23,7 @@ def test_get_price_from_df_returns_aapl():
 
     ##symbol does not exist test below
 
-def test_get_prices_from_df_returns_none():
+def test_get_price_from_df_returns_none():
 
     df = pd.DataFrame({
         "symbol" : ["AAPL", "MSFT"],
@@ -31,7 +31,7 @@ def test_get_prices_from_df_returns_none():
         "prev_price" : [198.0, 295.1],
     })
 
-    result = get_prices_from_df(df, "GOOGL")
+    result = get_price_from_df(df, "GOOGL")
 
     assert result is None
 
@@ -43,7 +43,7 @@ def test_get_price_from_df_returns_data():
         "prev_price": [198.0, 295.1]
     })
 
-    result = get_prices_from_df(df, "MSFT")
+    result = get_price_from_df(df, "MSFT")
 
     assert result is not None
     assert result["price"] == 300.1
