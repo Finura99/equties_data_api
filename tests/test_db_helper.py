@@ -1,17 +1,5 @@
-from fastapi import HTTPException
-from pathlib import Path
 import sqlite3
-
-###logic layer 
-
-
-def validate_symbol(symbol: str) -> str:
-    symbol = symbol.strip().upper()
-
-    if not symbol.isalpha():
-        raise HTTPException(status_code = 400, detail = "Invalid symbol format")
-    
-    return symbol
+from pathlib import Path
 
 # Get absolute path to DB
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,5 +32,3 @@ def get_price_from_db(symbol: str):
 print(get_price_from_db("AAPL"))
 print(get_price_from_db("MSFT"))
 print(get_price_from_db("GOOGL"))
-
-

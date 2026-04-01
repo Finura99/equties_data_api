@@ -3,6 +3,7 @@ import pandas as pd
 from fastapi import FastAPI, Request, HTTPException
 from contextlib import asynccontextmanager
 from src.schemas import PriceResponse, TopMoverResponse
+from src.services import validate_symbol, get_price_from_db
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent ##root directory
@@ -27,6 +28,7 @@ app = FastAPI(lifespan=lifespan)
 @app.get("/health") #proves app is alive
 def health():
     return {"status": "ok"}
+    
 
 @app.get("/prices")
 def get_prices(request: Request):
@@ -35,7 +37,6 @@ def get_prices(request: Request):
 
 
 def get_price_from_df(df, symbol):
-    symbol = symbol.upper()
 
     result = df[df["symbol"] == symbol]
 
@@ -50,19 +51,21 @@ def get_price_from_df(df, symbol):
     }
 
 @app.get("/prices/{symbol}", response_model=PriceResponse) ##get all prices
-def get_price(symbol: str, request: Request):
+def get_price(symbol: str):
 
+
+    symbol = validate_symbol(symbol) ##validate before hitting the business logic
+
+    result = get_price_from_db(symbol) #boolean check to see if it matches with our variable above
     ##df = pd.read_csv(PRICES_PATH) ## loads csv and converts to a dataframe-- UPDATE: SLOWER THAN CACHE
-    df = request.app.state.prices_df ## uses in memory data rather than exhaust disk i/o operations.
-
-    result = get_price_from_df(df, symbol) #boolean check to see if it matches with our variable above
+    ##df = request.app.state.prices_df ## uses in memory data rather than exhaust disk i/o operations.
 
     if result is None:
        raise HTTPException(status_code=404, detail="Symbol not found")
     
     return result
     
-##fastapi will serialise the dict (result) and respond it back as an JSON array containing object/s.
+##fastapi will serialise the dict (result) and respond it back as a JSON array of object/s.
 
 
 ## create an endpoint for top movers

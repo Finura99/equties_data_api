@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from fastapi import HTTPException
 
 class PriceResponse(BaseModel):
     symbol: str
