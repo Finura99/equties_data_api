@@ -40,9 +40,3 @@ def get_price_from_db(symbol: str):
     } #structure it into a dict as sql query returns it as a tuple like structure 
 
 
-# Quick test runs
-#print(get_price_from_db("AAPL"))
-#print(get_price_from_db("MSFT"))
-#print(get_price_from_db("GOOGL"))
-
-
