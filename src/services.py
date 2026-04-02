@@ -45,7 +45,17 @@ def get_top_movers_from_db(limit: int) -> list:
     cursor = conn.cursor() # initialise tools 
 
     cursor.execute(
-        "SELECT * FROM prices ORDER BY price DESC LIMIT ?",  
+        """
+        SELECT 
+            symbol,
+            price,
+            prev_price,
+            ((price - prev_price) / prev_price) * 100 AS change_pct
+        FROM prices 
+        WHERE prev_price > 0
+        ORDER BY change_pct DESC 
+        LIMIT ?
+        """,  
         (limit,)
         ) # run query
     
@@ -58,7 +68,8 @@ def get_top_movers_from_db(limit: int) -> list:
         result.append({
             "symbol": row[0],
             "price": row[1],
-            "preV_price": row[2],
+            "prev_price": row[2],
+            "change_pct" : row[3],
         }) # add in the rows in our cupboard
     
     return result
