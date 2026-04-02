@@ -4,7 +4,6 @@ import sqlite3
 
 ###logic layer / validation and database 
 
-
 def validate_symbol(symbol: str) -> str:
     symbol = symbol.strip().upper()
 
@@ -13,12 +12,13 @@ def validate_symbol(symbol: str) -> str:
     
     return symbol
 
+
 # Get path to DB
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "prices.db"
 
 
-def get_price_from_db(symbol: str):
+def get_price_from_db(symbol: str) -> dict:
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -37,6 +37,28 @@ def get_price_from_db(symbol: str):
         "symbol": row[0],
         "price": row[1],
         "prev_price": row[2],
-    } #structure it into a dict as sql query returns it as a tuple like structure 
+    } #structure it into a dict as sql query returns it as a tuple like structure
 
 
+def get_top_movers_from_db(limit: int) -> list:
+    conn = sqlite3.connect(DB_PATH) #connect to database
+    cursor = conn.cursor() # initialise tools 
+
+    cursor.execute(
+        "SELECT * FROM prices ORDER BY price DESC LIMIT ?",  
+        (limit,)
+        ) # run query
+    
+    rows = cursor.fetchall() #fetch results
+    conn.close() 
+
+    result = [] #our cupboard
+
+    for row in rows:
+        result.append({
+            "symbol": row[0],
+            "price": row[1],
+            "preV_price": row[2],
+        }) # add in the rows in our cupboard
+    
+    return result
