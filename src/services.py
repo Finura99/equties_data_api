@@ -7,7 +7,7 @@ import sqlite3
 def validate_symbol(symbol: str) -> str:
     symbol = symbol.strip().upper()
 
-    if not symbol.isalpha():
+    if not symbol.isalpha(): # if not alphabet then return 400 - incorrect format...
         raise HTTPException(status_code = 400, detail = "Invalid symbol format")
     
     return symbol
@@ -73,3 +73,29 @@ def get_top_movers_from_db(limit: int) -> list:
         }) # add in the rows in our cupboard
     
     return result
+
+def get_price_stats_from_db():
+    conn = sqlite3.connect(DB_PATH)
+
+    cursor = conn.cursor()
+
+    cursor = cursor.execute(
+        """
+        SELECT COUNT(*) FROM prices
+        """
+        )
+    total_rows = cursor.fetchone()[0]
+
+    cursor.execute(
+        """
+        SELECT AVG(price) FROM prices
+        """
+        )
+    average_price = cursor.fetchone()[0] # the zero indicates unwrapping of the tuple sql returns
+
+    conn.close()
+
+    return {
+        "total_rows" : total_rows,
+        "average_price" : average_price, 
+    }

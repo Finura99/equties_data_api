@@ -3,7 +3,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException, Request
 from contextlib import asynccontextmanager
 from src.schemas import PriceResponse, TopMoverResponse
-from src.services import validate_symbol, get_price_from_db, get_top_movers_from_db
+from src.services import validate_symbol, get_price_from_db, get_top_movers_from_db, get_price_stats_from_db
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent ##root directory
@@ -55,3 +55,7 @@ def get_top_movers(limit: int = 5):
     result = get_top_movers_from_db(limit) # endpoint relies on sql now rather than cached memory
 
     return result # fully db backed flow
+
+@app.get("/stats")
+def get_stats():
+    return get_price_stats_from_db()
