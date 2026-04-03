@@ -74,7 +74,7 @@ def get_top_movers_from_db(limit: int) -> list:
     
     return result
 
-def get_price_stats_from_db():
+def get_price_stats_from_db() -> dict:
     conn = sqlite3.connect(DB_PATH)
 
     cursor = conn.cursor()
@@ -99,3 +99,36 @@ def get_price_stats_from_db():
         "total_rows" : total_rows,
         "average_price" : average_price, 
     }
+
+def get_price_with_company_from_db(symbol: str):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            prices.symbol,
+            prices.price,
+            companies.company_name,
+            companies.sector
+        FROM prices
+        JOIN companies
+        ON prices.symbol = companies.symbol
+        WHERE prices.symbol = ?;
+        """, (symbol,)
+    )
+
+    row = cursor.fetchone()
+    conn.close()
+
+    if row is None:
+        return None
+    
+    return {
+        "symbol" : row[0],
+        "price" : row[1],
+        "prev_price" : row[2],
+        "company_name" : row[3],
+        "sector" : row[4],
+    }
+
