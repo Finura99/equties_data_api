@@ -49,7 +49,7 @@ def test_get_price_from_df_returns_data():
     assert result["price"] == 300.1
     assert result["prev_price"] == 295.1
 """
-#legacy elarning tests for testing a dataframe helper logic
+#legacy learning tests for testing a dataframe helper logic
 
 ########API testing
 
@@ -92,7 +92,7 @@ def test_get_top_movers():
 
     response = client.get("/top-movers")
 
-    data = response.json()
+    data = response.json() #taking json as input and parsing it to produce a js object which is a list on the next line.
 
     assert isinstance(data, list)
     assert len(data) > 0
@@ -102,7 +102,7 @@ def test_get_top_movers():
     assert "symbol" in item
     assert "change_pct" in item
 
-def test_get_price_stats_from_db():
+def test_get_price_stats():
 
     response = client.get("/stats")
 

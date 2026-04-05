@@ -30,7 +30,7 @@ def health():
 @app.get("/prices")
 def get_prices(request: Request):
     df = request.app.state.prices_df
-    return df.to_dict(orient="records") #converts df to dict for fastapi to turn it into json format.
+    return df.to_dict(orient="records") #converts df to list of dicts for fastapi to turn it into json format.
 
 @app.get("/prices/{symbol}", response_model=PriceResponse) ##get all prices 
 def get_price(symbol: str): ##uses database path
@@ -48,7 +48,7 @@ def get_price(symbol: str): ##uses database path
 
 
 @app.get("/top-movers", response_model=list[TopMoverResponse])
-def get_top_movers(limit: int = 5):
+def get_top_movers(limit: int = 5) -> list:
 
     ## cached in-memory data instead of repeatedly hitting the disk but below we use a sql backed flow.
 

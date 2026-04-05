@@ -27,7 +27,8 @@ def test_get_top_movers_from_db():
     assert isinstance(result, list)
     assert len(result) == 1
     
-    item = result[0]
+    item = result[0] #accessing the 1st row of our key from the service layer fucntion.
+
     assert "symbol" in item
     assert "change_pct" in item
 

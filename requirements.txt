@@ -1,3 +1,6 @@
+fastapi
 python3
 pandas
-fastapi
+pytest
+httpx
+pydantic
