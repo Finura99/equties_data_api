@@ -2,8 +2,16 @@ from pathlib import Path
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Request
 from contextlib import asynccontextmanager
+
 from src.schemas import PriceResponse, TopMoverResponse
-from src.services import validate_symbol, get_price_from_db, get_top_movers_from_db, get_price_stats_from_db, get_price_with_company_from_db
+from src.services import (
+    validate_symbol,
+    get_price_from_db,
+    get_top_movers_from_db,
+    get_price_stats_from_db, 
+    get_price_with_company_from_db,
+    get_price_from_postgres
+    )
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent ##root directory
@@ -63,3 +71,14 @@ def get_stats():
 @app.get("/prices/{symbol}/details")
 def get_price_with_company(symbol: str):
     return get_price_with_company_from_db(symbol)
+
+@app.get("/postgres/prices/{symbol}")
+def get_prices_postgres(symbol:str):
+    symbol = validate_symbol(symbol)
+
+    result = get_price_from_postgres(symbol)
+
+    if result is None:
+        raise HTTPException(status_code=404, detail="Symbol not found")
+    
+    return result

@@ -1,6 +1,6 @@
 fastapi
-python3
+uvicorn
 pandas
 pytest
 httpx
-pydantic
+psycopg2-binary

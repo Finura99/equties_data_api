@@ -5,7 +5,7 @@
 3. GET /top-movers -> SQL analytics query
 4. GET /stats 
 
-Intentially using a transitional architecture to udnerstand the different types of system thinking.
+Intentially using a transitional architecture to understand the different types of system thinking.
 
 # Equities Data API
 

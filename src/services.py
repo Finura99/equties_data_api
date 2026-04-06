@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from pathlib import Path
 import sqlite3
-
+import psycopg2
 ###logic layer / validation and database 
 
 def validate_symbol(symbol: str) -> str:
@@ -131,4 +131,32 @@ def get_price_with_company_from_db(symbol: str):
         "company_name" : row[3],
         "sector" : row[4],
     }
+
+def get_price_from_postgres(symbol:str):
+    conn = psycopg2.connect(
+        host="localhost",
+        port=5432,
+        user="admin",
+        password="admin",
+        database="equities",
+    )
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT * FROM prices WHERE symbol = %s
+        """,(symbol,))
+    
+    row = cursor.fetchone()
+    conn.close()
+
+    if row is None:
+        return None
+    
+    return {
+        "symbol": row[0],
+        "price" : row[1],
+        "prev_price": row[2],
+    }
+
 
