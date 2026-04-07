@@ -15,6 +15,6 @@ class TopMoverResponse(BaseModel):
 class PriceCreate(BaseModel):
     symbol: str
     price: float
-    prev_price: float 
+    prev_price: float
 
 ## the last one is our input contract for post endpoint.

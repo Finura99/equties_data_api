@@ -94,7 +94,4 @@ def create_price(payload: PriceCreate):
         prev_price=payload.prev_price,
     ) # service layer
 
-    if result.exists():
-        raise HTTPException(status_code=409, detail=f"Symbol '{payload.symbol}' already exists")
-
     return result #dict response
