@@ -3,14 +3,15 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException, Request
 from contextlib import asynccontextmanager
 
-from src.schemas import PriceResponse, TopMoverResponse
+from src.schemas import PriceResponse, TopMoverResponse, PriceCreate
 from src.services import (
     validate_symbol,
     get_price_from_db,
     get_top_movers_from_db,
     get_price_stats_from_db, 
     get_price_with_company_from_db,
-    get_price_from_postgres
+    get_price_from_postgres,
+    create_price_in_postgres
     )
 
 
@@ -82,3 +83,18 @@ def get_prices_postgres(symbol:str):
         raise HTTPException(status_code=404, detail="Symbol not found")
     
     return result
+
+@app.post("/postgres/prices", response_model=PriceCreate) # routing
+def create_price(payload: PriceCreate):
+    symbol = validate_symbol(payload.symbol) # validation
+
+    result = create_price_in_postgres(
+        symbol=symbol,
+        price=payload.price,
+        prev_price=payload.prev_price,
+    ) # service layer
+
+    if result.exists():
+        raise HTTPException(status_code=409, detail=f"Symbol '{payload.symbol}' already exists")
+
+    return result #dict response

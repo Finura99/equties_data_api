@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from pathlib import Path
 import sqlite3
 import psycopg2
+from psycopg2 import IntegrityError
 ###logic layer / validation and database 
 
 def validate_symbol(symbol: str) -> str:
@@ -114,7 +115,7 @@ def get_price_with_company_from_db(symbol: str):
         FROM prices
         JOIN companies
         ON prices.symbol = companies.symbol
-        WHERE prices.symbol = ?;
+        WHERE prices.symbol = ?
         """, (symbol,)
     )
 
@@ -159,4 +160,40 @@ def get_price_from_postgres(symbol:str):
         "prev_price": row[2],
     }
 
+def create_price_in_postgres(symbol:str, price:float, prev_price:float):
+    conn = psycopg2.connect(
+        host="localhost",
+        port=5432,
+        user="admin",
+        password="admin",
+        database="equities",
+    )
 
+    cursor = conn.cursor()
+
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO prices (symbol, price, prev_price)
+            VALUES (%s, %s, %s)
+            RETURNING symbol, price, prev_price
+            """, (symbol, price, prev_price)
+            )
+    
+        row = cursor.fetchone()
+        conn.commit()
+        conn.close()
+
+        return {
+            "symbol" : row[0],
+            "price" : row[1],
+            "prev_price": row[2],
+    }
+    except IntegrityError:
+        conn.rollback() #if insert fails and resets transaction and returns a clean messege
+        raise HTTPException(status_code=409, detail="Symbol already exists")
+    
+    finally:
+        cursor.close()
+        conn.close()
