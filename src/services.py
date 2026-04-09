@@ -4,7 +4,7 @@ from pathlib import Path
 import sqlite3
 import psycopg2
 from psycopg2 import IntegrityError
-###logic layer / validation and database 
+###logic layer / validation and database
 
 def validate_symbol(symbol: str) -> str:
     symbol = symbol.strip().upper()
@@ -194,8 +194,9 @@ def create_price_in_postgres(symbol:str, price:float, prev_price:float):
             "price" : row[1],
             "prev_price": row[2],
     }
+
     except IntegrityError:
-        conn.rollback() #if insert fails and resets transaction and returns a clean messege
+        conn.rollback() #if insert fails , it resets transaction
         raise HTTPException(status_code=409, detail="Symbol already exists")
     
     finally:
