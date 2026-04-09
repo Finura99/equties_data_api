@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from pathlib import Path
+
 import sqlite3
 import psycopg2
 from psycopg2 import IntegrityError
@@ -12,6 +13,9 @@ def validate_symbol(symbol: str) -> str:
         raise HTTPException(status_code = 400, detail = "Invalid symbol format")
     
     return symbol
+
+
+
 
 
 # Get path to DB
@@ -41,7 +45,7 @@ def get_price_from_db(symbol: str) -> dict:
     } #structure it into a dict as sql query returns it as a tuple like structure
 
 
-def get_top_movers_from_db(limit: int) -> list:
+def get_top_movers_from_db(limit: int, offset: int) -> list:
     conn = sqlite3.connect(DB_PATH) #connect to database
     cursor = conn.cursor() # initialise tools 
 
@@ -51,17 +55,17 @@ def get_top_movers_from_db(limit: int) -> list:
             symbol,
             price,
             prev_price,
-            ((price - prev_price) / prev_price) * 100 AS change_pct
-        FROM prices 
+            (price - prev_price) / prev_price * 100 AS change_pct
+        FROM prices
         WHERE prev_price > 0
-        ORDER BY change_pct DESC 
-        LIMIT ?
-        """,  
-        (limit,)
+        ORDER BY change_pct DESC
+        LIMIT ? OFFSET ?;
+        """,
+        (limit, offset)
         ) # run query
     
     rows = cursor.fetchall() #fetch results
-    conn.close() 
+    conn.close()
 
     result = [] #our cupboard
 
@@ -98,7 +102,7 @@ def get_price_stats_from_db() -> dict:
 
     return {
         "total_rows" : total_rows,
-        "average_price" : average_price, 
+        "average_price" : average_price,
     }
 
 def get_price_with_company_from_db(symbol: str):

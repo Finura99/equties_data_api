@@ -55,15 +55,21 @@ def get_price(symbol: str): ##uses database path
     
 ##fastapi will serialise the dict (result) and respond it back as a JSON array of object/s.
 
+top_movers_cache = {} #caching db for the query parameter
 
 @app.get("/top-movers", response_model=list[TopMoverResponse])
-def get_top_movers(limit: int = 5) -> list:
+def get_top_movers(limit: int = 5, offset: int = 0) -> list:
 
-    ## cached in-memory data instead of repeatedly hitting the disk but below we use a sql backed flow.
+    key = f"{limit}:{offset}"
 
-    result = get_top_movers_from_db(limit) # endpoint relies on sql now rather than cached memory
+    if key in top_movers_cache:
+        return top_movers_cache
 
-    return result # fully db backed flow
+    ## caching database answers instead of repeatedly hitting the disk but below we use a sqlite backed flow.
+
+    result = get_top_movers_from_db(limit, offset) 
+
+    return result
 
 @app.get("/stats")
 def get_stats():
@@ -95,3 +101,5 @@ def create_price(payload: PriceCreate):
     ) # service layer
 
     return result #dict response
+
+#db cache is similar to csv caching but no app.state as they both are used for different purposes.

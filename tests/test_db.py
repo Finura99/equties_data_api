@@ -22,7 +22,7 @@ def test_get_price_from_db_returns_none():
     assert result is None
 
 def test_get_top_movers_from_db():
-    result = get_top_movers_from_db(1)
+    result = get_top_movers_from_db(1,0)
 
     assert isinstance(result, list)
     assert len(result) == 1

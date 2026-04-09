@@ -7,8 +7,6 @@ DB_PATH = BASE_DIR / "data" / "prices.db"
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
-
-
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS prices (
     symbol TEXT,
