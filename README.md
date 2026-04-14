@@ -21,9 +21,10 @@ A backend API built with FastAPI that provides stock price, top movers, and aggr
 # Tech stack
 - Python
 - FastAPI
-- SQLite
+- SQLite, Postgres
 - Pandas
 - Pytest
+- Docker
 
 # Setup
 
