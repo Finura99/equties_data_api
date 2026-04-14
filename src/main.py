@@ -15,16 +15,16 @@ from src.services import (
     )
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent ##root directory
+BASE_DIR = Path(__file__).resolve().parent.parent # root directory
 PRICES_PATH = BASE_DIR / "data" / "prices.csv"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Loading data at startup...") # before server starts
+    print("Loading data at startup...") 
 
-    app.state.prices_df = pd.read_csv(PRICES_PATH) #load the data in memory once
+    app.state.prices_df = pd.read_csv(PRICES_PATH) # load the data in memory once before starting server
 
-    yield
+    yield # halts to execute other tasks.
 
     print("Shutting down...")
 

@@ -7,14 +7,12 @@ from psycopg2 import IntegrityError
 ###logic layer / validation and database
 
 def validate_symbol(symbol: str) -> str:
-    symbol = symbol.strip().upper()
+    symbol = symbol.strip().upper() 
 
     if not symbol.isalpha(): # if not alphabet then return 400 - incorrect format...
         raise HTTPException(status_code = 400, detail = "Invalid symbol format")
     
     return symbol
-
-
 
 
 

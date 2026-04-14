@@ -13,7 +13,7 @@ class TopMoverResponse(BaseModel):
 
 
 class PriceCreate(BaseModel):
-    symbol: str
+    symbol: str 
     price: float
     prev_price: float
 
