@@ -10,9 +10,11 @@ Intentially using a transitional architecture to understand the different types 
 # Equities Data API
 
 # What it does
+
 A backend API built with FastAPI that provides stock price, top movers, and aggregated statistics using both CSV in-memory data cache and SQL flow using SQLite.
 
 # Features
+
 - Retrieves all prices (CSV cached and in-memory)
 - Retrieves a single symbol (SQLite)
 - Get top movers (SQL computation)
